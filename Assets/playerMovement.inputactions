@@ -42,9 +42,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Crouch",
+                    "name": "Interact",
                     "type": "Button",
-                    "id": "90317eca-64c5-45b9-a7a9-065a912cf7e0",
+                    "id": "1d926d6d-dc32-4e39-aca6-da3f14770524",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Fire",
+                    "type": "Button",
+                    "id": "2ac9e27f-65e3-4931-9e15-5301a87e691a",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -241,23 +250,23 @@
                 },
                 {
                     "name": "",
-                    "id": "98fe50d7-d007-4fa5-948e-9304829aae89",
-                    "path": "<Keyboard>/c",
+                    "id": "224db523-0d21-4ca7-9829-2a3d236e1b8f",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
-                    "action": "Crouch",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Interact",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "b240e429-e113-4926-b72c-22b7d1327821",
-                    "path": "<Keyboard>/leftCtrl",
+                    "id": "8a869fc2-ca38-4c63-aea5-13284f8d1948",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
-                    "action": "Crouch",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Fire",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

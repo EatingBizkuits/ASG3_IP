@@ -5,8 +5,11 @@
  * Last Edit: 31/7/2022
  */
 
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Debug = UnityEngine.Debug;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMove : MonoBehaviour
@@ -22,9 +25,28 @@ public class PlayerMove : MonoBehaviour
     /// contains the player's rigidbody
     /// </summary>
     public Rigidbody playerContact;
-    
+
     #endregion
 
+    #region Objects
+
+    /// <summary>
+    /// Object that the player is currently holding
+    /// </summary>
+    public GameObject onHand;
+    
+    /// <summary>
+    /// Objects that player can currently access
+    /// </summary>
+    public List<GameObject> inventory;
+
+    /// <summary>
+    /// All possible objects a player can pick up
+    /// </summary>
+    public List<GameObject> allItems;
+
+    #endregion
+    
     #region Looking Variables (Mouse-Camera)
 
     /// <summary>
@@ -53,6 +75,40 @@ public class PlayerMove : MonoBehaviour
     /// </summary>
     /// Preset: Set to 12
     public float verticalRotationModifier = 12f;
+
+    /// <summary>
+    /// Sets distance of raycast from player
+    /// </summary>
+    public float interactionDistance = 1f;
+
+    [SerializeField] private GameObject target;
+
+    private float durationElapsed;
+
+    private const float Speed = 1f;
+
+    #endregion
+
+    #region Headbobbing Variables
+
+    /// <summary>
+    /// boolean to activate/deactive headbobbing effect
+    /// </summary>
+    public bool bobbingEffectActive = true;
+    
+    /// <summary>
+    /// sets how "strong" the head bob effect will be
+    /// </summary>
+    [Range(0, 0.1f)] 
+    public float amplitude = 0.0045f;
+
+    private Vector3 _startPos;
+
+    /// <summary>
+    /// sets the time interval between head bobs
+    /// </summary>
+    [Range(0, 30)] 
+    public float frequency = 8.5f;
     
     #endregion
 
@@ -65,6 +121,7 @@ public class PlayerMove : MonoBehaviour
     /// (NOTE: left-right movement should be 1/2 of front-back)
     /// </summary>
     /// Preset: Set to 3f (base)
+    [SerializeField]
     private float _moveSpeed;
     public float baseMoveSpeed = 3f; 
         
@@ -117,10 +174,18 @@ public class PlayerMove : MonoBehaviour
         _moveSpeed = baseMoveSpeed;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        _startPos = playerCam.transform.localPosition;
+
+        var playerInv = FindObjectOfType<inventoryLocator>().transform;
     }
 
     private void Update()
     {
+        BobbingEffect();
+        
+        // FixedUpdate() > Update() > LateUpdate()
+        // hover = false > hover = true (overridden) > color to be changed
+        Interactions();
     }
     
     private void FixedUpdate()
@@ -132,6 +197,8 @@ public class PlayerMove : MonoBehaviour
         GroundedChecker();
     }
 
+    #region Movement and Looking Functions
+    
     /// <summary>
     /// Handles player looking Actions
     /// leftRight look > Body
@@ -161,8 +228,58 @@ public class PlayerMove : MonoBehaviour
         _appliedMovement += transform.right * _retrievedInput.x;
         playerContact.MovePosition(transform.position - _appliedMovement * _moveSpeed * Time.deltaTime);
     }
-    
-    
+
+    private void Interactions(bool interact=false)
+    {
+        Debug.DrawLine(playerCam.transform.position, playerCam.transform.position + playerCam.transform.forward * interactionDistance);
+        
+        // player interactions may only interact with "Items to be picked up and UI
+        var layerMasking = LayerMask.GetMask("ItemToPickup", "UI");
+        if (Physics.Raycast(playerCam.transform.position, playerCam.transform.forward, out var hitInfo, interactionDistance, layerMasking, QueryTriggerInteraction.Collide))
+        {
+            // if raycast object is in UI layer
+            if (hitInfo.transform.gameObject.layer == LayerMask.NameToLayer("UI"))
+            {
+                hitInfo.transform.GetComponent<ObjectPlacing>().hovering = true;
+                Debug.Log(hitInfo.transform.name);
+
+                // if raycast collides with trigger and interaction is done
+                if (interact) hitInfo.transform.GetComponent<ObjectPlacing>().PlaceItem();
+                return;
+            }
+            // if raycast object is interacted
+            if (interact && hitInfo.transform.gameObject.layer == LayerMask.NameToLayer("ItemToPickup"))
+            {
+                Debug.Log("Interacted with " + hitInfo.transform.gameObject.name);
+                target = hitInfo.transform.gameObject;
+                // if the item to be picked up is not a key item, add it to inventory
+                if (target.tag != "keyItem")
+                {
+                    AddInventory(target.tag);
+                }
+                else
+                {
+                    var gameManager = FindObjectOfType<GameManager>();
+                    var dictToCompare = gameManager.collectedKeyItems;
+                    if (gameManager.sceneIndex == 0) //testingScene only for now
+                    {
+                        dictToCompare = gameManager.collectedKeyItems2;
+                    }
+                    var key = hitInfo.transform.GetComponent<keyItemIdentifier>().objectTypeText;
+                    dictToCompare[key] = true;
+
+                    var pedestal = FindObjectsOfType<PedestalController>();
+                    foreach (var code in pedestal)
+                    {
+                        if (code.targetItemText != key) continue;;
+                        code.swapUI();
+                    }
+                }
+                Destroy(target);
+            }
+        }
+    }
+
     /// <summary>
     /// Uses Raycast to check if player is grounded
     /// </summary>
@@ -172,7 +289,7 @@ public class PlayerMove : MonoBehaviour
         Debug.DrawLine(transform.position, transform.position - (transform.up * (groundDetectDist + 0.1f)));
         
         // If the raycast pointing down from player passes through object(s), state that player is not in air
-        if (Physics.Raycast(transform.position, Vector3.down, out var hitInfo, groundDetectDist + 0.1f))
+        if (Physics.Raycast(transform.position, Vector3.down, groundDetectDist + 0.1f))
         {
             _inAir = false;
         }
@@ -182,7 +299,92 @@ public class PlayerMove : MonoBehaviour
             _inAir = true;
         }
     }
+    
+    #endregion
 
+    #region Headbobbing Functions
+    
+    /// <summary>
+    /// Head bobbing effect when walking
+    /// </summary>
+    private void BobbingEffect()
+    {
+        // if head bob is not active, no head bob;
+        if (!bobbingEffectActive) return;
+        // cam reset should still work even if player is jumping
+        ResetCam();
+        // if player is in the air, no head bob;
+        if (_inAir) return;
+        // if player is not walking
+        if (_retrievedInput == Vector2.zero) return;
+        
+        // calculates bobbing in both x and y axis (up-down && left-right)
+        var bobMotion = Vector3.zero;
+        bobMotion.y += Mathf.Sin(Time.time * frequency) * amplitude;
+        bobMotion.x += Mathf.Cos(Time.time * frequency / 2) * amplitude * 2;
+        
+        playerCam.transform.localPosition += bobMotion;
+    }
+
+    /// <summary>
+    /// Brings back camera to starting position for next headbob loop
+    /// </summary>
+    private void ResetCam()
+    {
+        if (_retrievedInput == Vector2.zero)
+        {
+            playerCam.transform.localPosition = Vector3.Lerp(playerCam.transform.localPosition, _startPos, 12f * Time.deltaTime);
+            return;
+        }
+        // if camera is not at starting pos, revert it back to starting pos with lerp
+        if (playerCam.transform.localPosition == _startPos) return;
+        playerCam.transform.localPosition = Vector3.Lerp(playerCam.transform.localPosition, _startPos, 1 * Time.deltaTime);
+    }
+
+    #endregion
+    
+    #region Inventory Management
+        
+    /// <summary>
+    /// Sorts tag into identifiable index (based on allItems List)
+    /// </summary>
+    /// <param name="tag"></param>
+    /// <returns>
+    /// Index: tag
+    /// 0 : TORCH
+    /// </returns>
+    private int TagToIndex(string tag)
+    {
+        tag = tag.ToUpper();
+        if (tag == "TORCH")
+        {
+            return 0;
+        }
+        
+        return 100;
+    }
+
+    /// <summary>
+    /// adds object "picked up" to accessible inventory
+    /// </summary>
+    /// <param name="tag"></param>
+    private void AddInventory(string tag)
+    {
+        if (onHand != null)
+        {
+            onHand.SetActive(false);
+        }
+        var newItem = allItems[TagToIndex(tag)];
+
+        newItem.SetActive(true);
+        inventory.Add(newItem);
+        onHand = newItem;
+    }
+        
+    #endregion
+        
+    #region Misc Functions
+    
     /// <summary>
     /// static function for int to bool conversions
     /// </summary>
@@ -197,9 +399,12 @@ public class PlayerMove : MonoBehaviour
         
         return false;
     }
+
+    #endregion
+
+    
     
     #region UnityEvents
-
     
     private void OnLook(InputValue value)
     {
@@ -229,26 +434,41 @@ public class PlayerMove : MonoBehaviour
         var output = value.Get<float>();
         
         // If player is not in contact with the ground, you cannot start sprinting
-        if (_inAir) return;
         
         // if player is currently not running and output is true (is pressing shift)
         // running state starts
-        if (!_sprinting && IntToBool(output))
+        if (!_sprinting && IntToBool(output) && !_inAir)
         {
             _moveSpeed = sprintingSpeed;
             _sprinting = true;
+            amplitude = 0.013f;
+            frequency = 15f;
         }
         
         // if player is currently running and output is false (no longer pressing shift)
         // running state stops
-        else if (_sprinting && !IntToBool(output))
+        if (_sprinting && !IntToBool(output))
         {
             _moveSpeed = baseMoveSpeed;
             _sprinting = false;
+            amplitude = 0.0045f;
+            frequency = 8.5f;
         }
+    }
+
+    private void OnFire()
+    {
+        if (onHand == null) return;
+        if (onHand.gameObject.tag == "torch")
+        {
+            onHand.GetComponent<Torch>().ToggleLight();
+        }
+    }
+
+    private void OnInteract()
+    {
+        Interactions(true);
     }
     
     #endregion
-
-
 }
