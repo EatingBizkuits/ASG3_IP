@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5279254234807495557}
   - component: {fileID: 2864365330049619185}
   - component: {fileID: 8117090474398255113}
+  - component: {fileID: 6428854709433238248}
   m_Layer: 0
   m_Name: pCube1
   m_TagString: Untagged
@@ -83,6 +84,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &6428854709433238248
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2168128175067224732}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4068373912626513877, guid: 16b3522b834aa244ca5c5b1aeedf9380, type: 3}
 --- !u!1 &2276893937977018136
 GameObject:
   m_ObjectHideFlags: 0
@@ -108,7 +123,7 @@ Transform:
   m_GameObject: {fileID: 2276893937977018136}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 150.71094, y: 9.357103, z: 10.54019}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5893648, y: 0.5893648, z: 0.5893648}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 946457659567578701}
@@ -127,6 +142,7 @@ GameObject:
   - component: {fileID: 946457659567578701}
   - component: {fileID: 1625800440362225123}
   - component: {fileID: 6381192327821836415}
+  - component: {fileID: 1324475221786801850}
   m_Layer: 0
   m_Name: NormDoor_25
   m_TagString: Untagged
@@ -199,3 +215,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &1324475221786801850
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6515900820002904948}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -5344535313166650547, guid: 16b3522b834aa244ca5c5b1aeedf9380, type: 3}

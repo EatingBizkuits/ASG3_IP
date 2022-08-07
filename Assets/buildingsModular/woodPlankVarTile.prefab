@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3587562389335195884}
   - component: {fileID: 1783353663789331923}
   - component: {fileID: 6603060937740743694}
+  - component: {fileID: 8640982427693145561}
   m_Layer: 0
   m_Name: Ceiling_15
   m_TagString: Untagged
@@ -83,6 +84,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &8640982427693145561
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 120567890836080429}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 7666608920835030636, guid: af300438243b98d439739c353ccaa631, type: 3}
 --- !u!1 &8838404198532959597
 GameObject:
   m_ObjectHideFlags: 0
@@ -108,7 +123,7 @@ Transform:
   m_GameObject: {fileID: 8838404198532959597}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 164.02873, y: 11.36419, z: -8.839876}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5893648, y: 0.5893648, z: 0.5893648}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3587562389335195884}
