@@ -698,7 +698,7 @@ GameObject:
   - component: {fileID: 6113925269989035381}
   - component: {fileID: 6113925269989035380}
   - component: {fileID: 6113925269989035379}
-  m_Layer: 8
+  m_Layer: 11
   m_Name: placedObject
   m_TagString: keyItem
   m_Icon: {fileID: 0}

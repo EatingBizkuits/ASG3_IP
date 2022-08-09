@@ -26,6 +26,11 @@ public class PlayerMove : MonoBehaviour
     /// </summary>
     public Rigidbody playerContact;
 
+    /// <summary>
+    /// contains the controller to the AI
+    /// </summary>
+    public Companion _aiController;
+    
     #endregion
 
     #region Objects
@@ -177,6 +182,7 @@ public class PlayerMove : MonoBehaviour
         _startPos = playerCam.transform.localPosition;
 
         var playerInv = FindObjectOfType<inventoryLocator>().transform;
+        _aiController = FindObjectOfType<Companion>();
     }
 
     private void Update()
@@ -226,6 +232,7 @@ public class PlayerMove : MonoBehaviour
         _appliedMovement = transform.forward * _retrievedInput.y;
         // Applies left right axis to SIDE motion (A | D)
         _appliedMovement += transform.right * _retrievedInput.x;
+        _appliedMovement.Normalize();
         playerContact.MovePosition(transform.position - _appliedMovement * _moveSpeed * Time.deltaTime);
     }
 
@@ -241,7 +248,6 @@ public class PlayerMove : MonoBehaviour
             if (hitInfo.transform.gameObject.layer == LayerMask.NameToLayer("UI"))
             {
                 hitInfo.transform.GetComponent<ObjectPlacing>().hovering = true;
-                Debug.Log(hitInfo.transform.name);
 
                 // if raycast collides with trigger and interaction is done
                 if (interact) hitInfo.transform.GetComponent<ObjectPlacing>().PlaceItem();
@@ -275,7 +281,7 @@ public class PlayerMove : MonoBehaviour
                         code.swapUI();
                     }
                 }
-                Destroy(target);
+                target.SetActive(false);
             }
         }
     }
@@ -287,9 +293,11 @@ public class PlayerMove : MonoBehaviour
     {
         // shows the presence of raycast
         Debug.DrawLine(transform.position, transform.position - (transform.up * (groundDetectDist + 0.1f)));
-        
+
+        var layerMasking = LayerMask.GetMask("Companion");
+
         // If the raycast pointing down from player passes through object(s), state that player is not in air
-        if (Physics.Raycast(transform.position, Vector3.down, groundDetectDist + 0.1f))
+        if (Physics.Raycast(transform.position, Vector3.down,groundDetectDist + 0.1f, ~layerMasking))
         {
             _inAir = false;
         }
@@ -320,8 +328,13 @@ public class PlayerMove : MonoBehaviour
         
         // calculates bobbing in both x and y axis (up-down && left-right)
         var bobMotion = Vector3.zero;
-        bobMotion.y += Mathf.Sin(Time.time * frequency) * amplitude;
-        bobMotion.x += Mathf.Cos(Time.time * frequency / 2) * amplitude * 2;
+        //  sine graph formulae : amplitude * (period) + lift
+        // dev notes (remove this on final)
+        // Try rotation of Lemniscate of Gerono curve, but cosine does not work
+        // Tried Lissajous curve, extra /2 on amplitude makes bob too vigorous. (current implementation)
+        // might just try simple cosine wave for xy direction (vector2) if there is time 
+        bobMotion.y += Mathf.Sin(Time.time * frequency) * amplitude; // * Mathf.Cos(Time.time * frequency);
+        bobMotion.x += Mathf.Sin(Time.time * frequency * 2) * amplitude; // 2 ;
         
         playerCam.transform.localPosition += bobMotion;
     }
@@ -441,8 +454,12 @@ public class PlayerMove : MonoBehaviour
         {
             _moveSpeed = sprintingSpeed;
             _sprinting = true;
+            amplitude = 0.01f;
+            frequency = 12f;
+            /*
             amplitude = 0.013f;
             frequency = 15f;
+            */
         }
         
         // if player is currently running and output is false (no longer pressing shift)
@@ -468,6 +485,11 @@ public class PlayerMove : MonoBehaviour
     private void OnInteract()
     {
         Interactions(true);
+    }
+
+    private void OnUseCompanion()
+    {
+        _aiController.SetNewTarget();
     }
     
     #endregion

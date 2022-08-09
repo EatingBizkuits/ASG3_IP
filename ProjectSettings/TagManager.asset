@@ -10,17 +10,17 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
   - DecoIgnore
   - ItemNoClip
   - ItemToPickup
   - Companion
-  - 
-  - 
-  - 
-  - 
+  - CompanionFloor
+  - placedObj
+  - CompanionClip
+  - Enemy
   - 
   - 
   - 

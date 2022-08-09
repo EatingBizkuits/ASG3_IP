@@ -38,14 +38,8 @@ public class GameManager : MonoBehaviour
     #endregion
     
     // Runs when code starts
-    void Start()
+    private void Start()
     {
         sceneIndex = SceneManager.GetActiveScene().buildIndex;
-    }
-    
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
