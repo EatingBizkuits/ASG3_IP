@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 46b94ae71a5948a4586a6b18e54c8aaf
+guid: a4e4b989f7bbc1443b1ed3976ee78705
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -7,13 +7,13 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Roof
-    second: {fileID: 2100000, guid: 5b27d14867f9a58419fde21b0f8decd3, type: 2}
+      name: Default_Material
+    second: {fileID: 2100000, guid: 412a339a421c6dc4b96ff09c33c7cee7, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: lambert1
-    second: {fileID: 2100000, guid: 5fd029a509caec144897ce00220d967f, type: 2}
+      name: Roof
+    second: {fileID: 2100000, guid: 749cef6c6b7806640999b6a5c2794a30, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
