@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -30,6 +31,11 @@ public class PlayerMove : MonoBehaviour
     /// contains the controller to the AI
     /// </summary>
     public Companion _aiController;
+
+    /// <summary>
+    /// contains the gamemanagerscript
+    /// </summary>
+    public GameManager _gameManager;
     
     #endregion
 
@@ -57,12 +63,12 @@ public class PlayerMove : MonoBehaviour
     /// <summary>
     /// Handles Horizontal Look Axis (left <-> right)
     /// </summary>
-    private float _horizontalLook;
+    public float _horizontalLook;
 
     /// <summary>
     /// Handles Vertical Look Axis (up ^ | v down)
     /// </summary>
-    private float _verticalLook;
+    public float _verticalLook;
     
     /// <summary>
     /// Player Death Boolean
@@ -92,6 +98,8 @@ public class PlayerMove : MonoBehaviour
 
     private const float Speed = 1f;
 
+    public int axisDirection = 1;
+    
     #endregion
 
     #region Headbobbing Variables
@@ -114,6 +122,8 @@ public class PlayerMove : MonoBehaviour
     /// </summary>
     [Range(0, 30)] 
     public float frequency = 8.5f;
+
+    private float elapsedTime;
     
     #endregion
 
@@ -166,15 +176,32 @@ public class PlayerMove : MonoBehaviour
 
     #region >>> Sprinting <<<
 
+    /// <summary>
+    /// takes note if player is currently running
+    /// </summary>
     private bool _sprinting;
+    
+    /// <summary>
+    /// speed of running player
+    /// </summary>
     public float sprintingSpeed = 6f;
 
+    public bool exhausted;
+
+    public Slider staminaBar;
+
+    public float drainSpeed = 0.1f;
+    
+    public float recoverSpeed = 0.05f;
+    
     #endregion
     
     #endregion
 
+
     private void Awake()
     {
+        _gameManager = FindObjectOfType<GameManager>();
         // resets move speed to defaults
         _moveSpeed = baseMoveSpeed;
         Cursor.visible = false;
@@ -183,12 +210,12 @@ public class PlayerMove : MonoBehaviour
 
         var playerInv = FindObjectOfType<inventoryLocator>().transform;
         _aiController = FindObjectOfType<Companion>();
+        
     }
 
     private void Update()
     {
         BobbingEffect();
-        
         // FixedUpdate() > Update() > LateUpdate()
         // hover = false > hover = true (overridden) > color to be changed
         Interactions();
@@ -201,6 +228,7 @@ public class PlayerMove : MonoBehaviour
         Looking();
         Movement();
         GroundedChecker();
+        Recovery();
     }
 
     #region Movement and Looking Functions
@@ -217,10 +245,9 @@ public class PlayerMove : MonoBehaviour
         {
             return;
         }
-
         // current angle + angle change + lookSpeed + deltatime; (Horizontal Rotation > body), (Vertical Rotation > Head)
         transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + Vector3.up * _horizontalLook * horizontalRotationModifier * Time.deltaTime);
-        playerCam.transform.localRotation = Quaternion.Euler(new Vector3(playerCam.transform.rotation.eulerAngles.x - 1 * _verticalLook * verticalRotationModifier * Time.deltaTime, 180, 0));
+        playerCam.transform.localRotation = Quaternion.Euler(new Vector3(playerCam.transform.rotation.eulerAngles.x - axisDirection * _verticalLook * verticalRotationModifier * Time.deltaTime, 180, 0));
     }
 
     /// <summary>
@@ -228,6 +255,7 @@ public class PlayerMove : MonoBehaviour
     /// </summary>
     private void Movement()
     {
+        StaminaBarUpdate();
         // Applies up down axis (front back axis in the case of the game) to FORWARD/BACK motion (W | S)
         _appliedMovement = transform.forward * _retrievedInput.y;
         // Applies left right axis to SIDE motion (A | D)
@@ -256,7 +284,7 @@ public class PlayerMove : MonoBehaviour
             // if raycast object is interacted
             if (interact && hitInfo.transform.gameObject.layer == LayerMask.NameToLayer("ItemToPickup"))
             {
-                Debug.Log("Interacted with " + hitInfo.transform.gameObject.name);
+                //Debug.Log("Interacted with " + hitInfo.transform.gameObject.name);
                 target = hitInfo.transform.gameObject;
                 // if the item to be picked up is not a key item, add it to inventory
                 if (target.tag != "keyItem")
@@ -307,6 +335,29 @@ public class PlayerMove : MonoBehaviour
             _inAir = true;
         }
     }
+
+    private void StaminaBarUpdate()
+    {
+        if (staminaBar.value >= 1) exhausted = false;
+        if (staminaBar.value <= 0)
+        {
+            exhausted = true;
+            _sprinting = false;
+            _moveSpeed = baseMoveSpeed;
+            amplitude = 0.0045f;
+            frequency = 8.5f;
+            return;
+        }
+        if (_sprinting && _retrievedInput != Vector2.zero)
+        {
+            staminaBar.value -= Time.deltaTime * drainSpeed;
+        }
+    }
+    private void Recovery()
+    {
+        if (_sprinting && _retrievedInput != Vector2.zero) return;
+        staminaBar.value += Time.deltaTime * recoverSpeed;
+    }
     
     #endregion
 
@@ -328,13 +379,14 @@ public class PlayerMove : MonoBehaviour
         
         // calculates bobbing in both x and y axis (up-down && left-right)
         var bobMotion = Vector3.zero;
+        //elapsedTime += Time.deltaTime;
         //  sine graph formulae : amplitude * (period) + lift
         // dev notes (remove this on final)
         // Try rotation of Lemniscate of Gerono curve, but cosine does not work
         // Tried Lissajous curve, extra /2 on amplitude makes bob too vigorous. (current implementation)
         // might just try simple cosine wave for xy direction (vector2) if there is time 
         bobMotion.y += Mathf.Sin(Time.time * frequency) * amplitude; // * Mathf.Cos(Time.time * frequency);
-        bobMotion.x += Mathf.Sin(Time.time * frequency * 2) * amplitude; // 2 ;
+        bobMotion.x += Mathf.Sin(Time.time * frequency / 2) * amplitude; // 2 ;
         
         playerCam.transform.localPosition += bobMotion;
     }
@@ -444,6 +496,7 @@ public class PlayerMove : MonoBehaviour
 
     private void OnSprint(InputValue value)
     {
+        if (exhausted) return;
         var output = value.Get<float>();
         
         // If player is not in contact with the ground, you cannot start sprinting
@@ -490,6 +543,11 @@ public class PlayerMove : MonoBehaviour
     private void OnUseCompanion()
     {
         _aiController.SetNewTarget();
+    }
+
+    private void OnToggleMenu()
+    {
+        _gameManager.ToggleMenu();
     }
     
     #endregion

@@ -46,16 +46,18 @@ public class EnemyProximity : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag != "Player") return;
-        Debug.Log("within range");
+        //Debug.Log("within range");
         withinRange = true;
         peripherals.enabled = withinRange;
+        GetComponent<AudioSource>().mute = false;
     }
     
     private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.tag != "Player") return;
-        Debug.Log("out of range");
+        //Debug.Log("out of range");
         withinRange = false;
         peripherals.enabled = withinRange;
+        GetComponent<AudioSource>().mute = true;
     }
 }

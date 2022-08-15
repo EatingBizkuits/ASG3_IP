@@ -21,9 +21,9 @@ TagManager:
   - placedObj
   - CompanionClip
   - Enemy
-  - 
-  - 
-  - 
+  - EnemyTarget
+  - InvisCorridor
+  - InvisCorridorOuter
   - 
   - 
   - 
