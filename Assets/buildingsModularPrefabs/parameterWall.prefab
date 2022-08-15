@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6557265216481705723}
   - component: {fileID: 1667565886937693250}
   - component: {fileID: 5287765899218824416}
+  - component: {fileID: 1591053344326544557}
   m_Layer: 0
   m_Name: pCube94
   m_TagString: Untagged
@@ -83,6 +84,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &1591053344326544557
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2022663920276332063}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -9036787498174393926, guid: 3edd248ef9e944d47a7d11d4ae5428fb, type: 3}
 --- !u!1 &3465663238755705865
 GameObject:
   m_ObjectHideFlags: 0
@@ -94,6 +109,7 @@ GameObject:
   - component: {fileID: 6507247842761594326}
   - component: {fileID: 609596169072500149}
   - component: {fileID: 344161357735311550}
+  - component: {fileID: 5084649759021333233}
   m_Layer: 0
   m_Name: section13_RoofSect2_polySurface91
   m_TagString: Untagged
@@ -167,6 +183,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &5084649759021333233
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3465663238755705865}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -2274234150434372834, guid: 3edd248ef9e944d47a7d11d4ae5428fb, type: 3}
 --- !u!1 &7666307702747588753
 GameObject:
   m_ObjectHideFlags: 0
