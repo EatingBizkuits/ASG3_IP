@@ -52,10 +52,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public bool menuState;
 
-    private Dictionary<string, bool> playerData = new Dictionary<string, bool>()
-    {
-    };
-
     #endregion
 
     #region Player Related Variables

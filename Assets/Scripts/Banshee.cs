@@ -24,6 +24,8 @@ public class Banshee : MonoBehaviour
     public bool playerDetected;
 
     public Transform player;
+
+    public AudioSource scream;
     
     private void Start()
     {
@@ -154,6 +156,8 @@ public class Banshee : MonoBehaviour
         // halt its position;
         _aiController.ResetPath();
         //FindObjectOfType<Enemy>().nextState = "Investigate";
+        if (scream.isPlaying) return;
+        scream.Play();
     }
 
     private void OnTriggerExit(Collider other)
