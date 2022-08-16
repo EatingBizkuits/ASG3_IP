@@ -44,19 +44,21 @@ public class UIelements : MonoBehaviour
 
     public void AdjustSliderX(float sliderValue)
     {
+        gameManager.xAxis = sliderValue;
         textX.text = sliderValue.ToString("0.0");
         playerCode.horizontalRotationModifier = sliderValue;
     }
     
     public void AdjustSliderY(float sliderValue)
     {
+        gameManager.yAxis = sliderValue;
         textY.text = sliderValue.ToString("0.0");
         playerCode.verticalRotationModifier = sliderValue;
-
     }
 
     public void SetLevel(float sliderValue)
     {
+        gameManager.volume = sliderValue;
         // value of audio is between -80 and 0 in logarithmic value
         mixer.SetFloat("masterVolume", Mathf.Log10(sliderValue) * 20);
         textAudio.text = (FloatNormalize(sliderValue, 0.0001f, 1f)).ToString("0") + "%";
@@ -75,6 +77,7 @@ public class UIelements : MonoBehaviour
 
     public void ToggleInvertAxis(bool input)
     {
+        gameManager.invertY = input;
         int change;
         // if invert y axis is true
         if (input)
@@ -94,9 +97,11 @@ public class UIelements : MonoBehaviour
     /// <param name="input"></param>
     public void ToggleBGM(bool input)
     {
+        gameManager.muted = input;
         input = !input;
         gameManager.player.GetComponent<AudioSource>().enabled = input;
     }
+
 
     /// <summary>
     /// activates/deactivates headbob in code
@@ -105,6 +110,7 @@ public class UIelements : MonoBehaviour
     public void ToggleHeadBob(bool input)
     {
         playerCode.bobbingEffectActive = input;
+        gameManager.headBob = input;
     }
     
     /// <summary>
@@ -113,6 +119,11 @@ public class UIelements : MonoBehaviour
     public void MainMenu()
     {
         FindObjectOfType<GameManager>().sceneIndex = 0;
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
     
     private void OnEnable()

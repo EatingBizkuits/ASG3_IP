@@ -119,7 +119,6 @@ public class PlayerMove : MonoBehaviour
 
     public int axisDirection = 1;
 
-    public AudioSource walking;
     
     #endregion
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -62,6 +63,10 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public static GameManager instance;
 
+    /// <summary>
+    /// player data
+    /// </summary>
+    public string exportData;
     
     #endregion
 
@@ -69,6 +74,22 @@ public class GameManager : MonoBehaviour
     
     #endregion
 
+    #region PlayerSettings
+
+    public float xAxis = 12;
+
+    public float yAxis = 8;
+
+    public float volume = 1;
+
+    public bool muted = false;
+
+    public bool invertY = false;
+
+    public bool headBob = true;
+    
+    #endregion
+    
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -89,13 +110,21 @@ public class GameManager : MonoBehaviour
         // if playable scene, start up all variables
         if (sceneIndex is 2 or 4)
         {
-            inGameMenu = FindObjectOfType<UIelements>().gameObject;
+            var menuScript = FindObjectOfType<UIelements>();
+            inGameMenu = menuScript.gameObject;
             menuState = false;
             inGameMenu.SetActive(menuState);
-            player = FindObjectOfType<PlayerMove>().gameObject;
+            var pScript = FindObjectOfType<PlayerMove>();
+            player = pScript.gameObject;
             taskbook = FindObjectOfType<TaskBook>();
             // sets players position to myself
             player.transform.position = transform.position;
+            pScript.horizontalRotationModifier = xAxis;
+            pScript.verticalRotationModifier = yAxis;
+            menuScript.SetLevel(volume);
+            menuScript.ToggleHeadBob(headBob);
+            menuScript.ToggleInvertAxis(invertY);
+            menuScript.ToggleBGM(muted);
         }
     }
 
@@ -120,6 +149,7 @@ public class GameManager : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().buildIndex != sceneIndex)
         {
+            Time.timeScale = 1f;
             SceneManager.LoadScene(sceneIndex);
         }
     }
@@ -161,4 +191,6 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Time.timeScale = 1f;
     }
+
+   
 }

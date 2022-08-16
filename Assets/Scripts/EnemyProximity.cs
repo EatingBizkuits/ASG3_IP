@@ -21,6 +21,8 @@ public class EnemyProximity : MonoBehaviour
 
     private float alphaValue;
 
+   
+    
     private void Start()
     {
         _player = FindObjectOfType<PlayerMove>().transform;
