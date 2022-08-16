@@ -35,7 +35,9 @@ public class ObjectPlacing : MonoBehaviour
         gM.itemCounter++;
         if (gM.itemCounter > 3)
         {
-            gM.sceneIndex += 1;
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.Confined;
+            gM.sceneIndex = 3;
         }
     }
 }

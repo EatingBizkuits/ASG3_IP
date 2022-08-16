@@ -311,7 +311,7 @@
                 {
                     "name": "",
                     "id": "c2d11361-939b-4efa-9e7b-e89b5c84f0b6",
-                    "path": "<Keyboard>/escape",
+                    "path": "<Keyboard>/f1",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
