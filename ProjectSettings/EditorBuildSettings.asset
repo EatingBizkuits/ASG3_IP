@@ -8,4 +8,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/WhiteboxScene.unity
     guid: 7c8e7dd7338df794ca8b91eac0aa0533
+  - enabled: 1
+    path: Assets/Scenes/MainMenuUI.unity
+    guid: 6eb9e13bb544f1a49b5a01a19c80cc6a
+  - enabled: 1
+    path: Assets/Scenes/LayoutScene.unity
+    guid: 9ec23217564fef2408167a3b949c145a
   m_configObjects: {}
