@@ -42,7 +42,7 @@ public class Enemy : MonoBehaviour
     
     private void Awake()
     {
-        _aiController = GetComponent<NavMeshAgent>();
+        //_aiController = GetComponent<NavMeshAgent>();
     }
 
     // Start is called before the first frame update

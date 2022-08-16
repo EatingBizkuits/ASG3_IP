@@ -14,6 +14,7 @@ public class Torch : MonoBehaviour
 
     public void ToggleLight()
     {
+        GetComponent<AudioSource>().Play();
         if (lightStatus)
         {
             lightStatus = !lightStatus;

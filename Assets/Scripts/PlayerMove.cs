@@ -8,9 +8,13 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
+using UnityEngine.Serialization;
+using UnityEngine.UIElements;
+using Cursor = UnityEngine.Cursor;
 using Debug = UnityEngine.Debug;
+using Slider = UnityEngine.UI.Slider;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMove : MonoBehaviour
@@ -36,6 +40,21 @@ public class PlayerMove : MonoBehaviour
     /// contains the gamemanagerscript
     /// </summary>
     public GameManager _gameManager;
+
+    /// <summary>
+    /// bool if the player has recieved the AI
+    /// </summary>
+    public bool hasAI;
+
+    /// <summary>
+    /// contains the script for the playertasks
+    /// </summary>
+    public TaskBook storyUI;
+
+    /// <summary>
+    /// contains deathAnimator
+    /// </summary>
+    public Animator deathSequence;
     
     #endregion
 
@@ -99,6 +118,8 @@ public class PlayerMove : MonoBehaviour
     private const float Speed = 1f;
 
     public int axisDirection = 1;
+
+    public AudioSource walking;
     
     #endregion
 
@@ -209,8 +230,7 @@ public class PlayerMove : MonoBehaviour
         _startPos = playerCam.transform.localPosition;
 
         var playerInv = FindObjectOfType<inventoryLocator>().transform;
-        _aiController = FindObjectOfType<Companion>();
-        
+        if (hasAI) _aiController = FindObjectOfType<Companion>();
     }
 
     private void Update()
@@ -240,6 +260,7 @@ public class PlayerMove : MonoBehaviour
     /// </summary>
     private void Looking()
     {
+        //Debug.Log(axisDirection * _verticalLook * verticalRotationModifier * Time.deltaTime);
         // if the player is dead, do not let the rest of the code run
         if (isDead)
         {
@@ -287,6 +308,11 @@ public class PlayerMove : MonoBehaviour
                 //Debug.Log("Interacted with " + hitInfo.transform.gameObject.name);
                 target = hitInfo.transform.gameObject;
                 // if the item to be picked up is not a key item, add it to inventory
+                if (target.tag == "companion")
+                {
+                    FindObjectOfType<companionPickup>().PickUp();
+                    return;
+                }
                 if (target.tag != "keyItem")
                 {
                     AddInventory(target.tag);
@@ -351,6 +377,7 @@ public class PlayerMove : MonoBehaviour
         if (_sprinting && _retrievedInput != Vector2.zero)
         {
             staminaBar.value -= Time.deltaTime * drainSpeed;
+            
         }
     }
     private void Recovery()
@@ -423,6 +450,7 @@ public class PlayerMove : MonoBehaviour
         tag = tag.ToUpper();
         if (tag == "TORCH")
         {
+            storyUI.NextTask();
             return 0;
         }
         
@@ -464,13 +492,21 @@ public class PlayerMove : MonoBehaviour
         
         return false;
     }
-
+    
     #endregion
 
     
     
     #region UnityEvents
-    
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.tag == "Ghost")
+        {
+            deathSequence.SetBool("Scare", true);
+        }
+    }
+
     private void OnLook(InputValue value)
     {
         var actions = value.Get<Vector2>();
@@ -542,12 +578,20 @@ public class PlayerMove : MonoBehaviour
 
     private void OnUseCompanion()
     {
+        if (!hasAI) return;
+        if (_aiController == null) _aiController = FindObjectOfType<Companion>();
         _aiController.SetNewTarget();
     }
 
     private void OnToggleMenu()
     {
         _gameManager.ToggleMenu();
+    }
+
+    private void OnToggleBook()
+    {
+        storyUI.ToggleBook();
+        Debug.Log("toggled");
     }
     
     #endregion

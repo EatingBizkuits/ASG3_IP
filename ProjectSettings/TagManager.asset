@@ -6,6 +6,8 @@ TagManager:
   tags:
   - torch
   - keyItem
+  - Ghost
+  - companion
   layers:
   - Default
   - TransparentFX

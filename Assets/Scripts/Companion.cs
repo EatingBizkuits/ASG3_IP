@@ -166,7 +166,7 @@ public class Companion : MonoBehaviour
         var closestObj = detectionRadius + 10;
         Transform closestGameObj = null;
         var allItems = FindObjectsOfType<keyItemIdentifier>();
-        Debug.Log(allItems.Length);
+        //Debug.Log(allItems.Length);
         foreach (var item in allItems)
         {
             var tempValue = Vector3.Distance(transform.position, item.transform.position);

@@ -88,22 +88,37 @@ public class UIelements : MonoBehaviour
         playerCode.axisDirection = change;
     }
 
+    /// <summary>
+    /// toggles bgm on and off via mute
+    /// </summary>
+    /// <param name="input"></param>
     public void ToggleBGM(bool input)
     {
         input = !input;
         gameManager.player.GetComponent<AudioSource>().enabled = input;
     }
 
+    /// <summary>
+    /// activates/deactivates headbob in code
+    /// </summary>
+    /// <param name="input"></param>
     public void ToggleHeadBob(bool input)
     {
         playerCode.bobbingEffectActive = input;
+    }
+    
+    /// <summary>
+    /// returns to main menu
+    /// </summary>
+    public void MainMenu()
+    {
+        FindObjectOfType<GameManager>().sceneIndex = 0;
     }
     
     private void OnEnable()
     {
         //Debug.Log("eanbled");
         if (gameManager == null) gameManager = FindObjectOfType<GameManager>();
-        playerCode = FindObjectOfType<PlayerMove>();
         var playerX = playerCode.horizontalRotationModifier;
         textX.text = playerX.ToString("0.0");
         sliderX.value = playerX;
