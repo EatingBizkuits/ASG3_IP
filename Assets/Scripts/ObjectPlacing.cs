@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class ObjectPlacing : MonoBehaviour
@@ -30,5 +31,11 @@ public class ObjectPlacing : MonoBehaviour
     {
         item.SetActive(true);
         interactionUI.SetActive(false);
+        var gM = FindObjectOfType<GameManager>();
+        gM.itemCounter++;
+        if (gM.itemCounter > 3)
+        {
+            gM.sceneIndex += 1;
+        }
     }
 }

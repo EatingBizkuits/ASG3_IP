@@ -70,10 +70,6 @@ public class GameManager : MonoBehaviour
     
     #endregion
 
-    #region Player Related Variables
-    
-    #endregion
-
     #region PlayerSettings
 
     public float xAxis = 12;
@@ -89,7 +85,9 @@ public class GameManager : MonoBehaviour
     public bool headBob = true;
     
     #endregion
-    
+
+    public int itemCounter;
+
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -108,7 +106,7 @@ public class GameManager : MonoBehaviour
         Application.targetFrameRate = 60;
         // turns of UI once stored
         // if playable scene, start up all variables
-        if (sceneIndex is 2 or 4)
+        if (sceneIndex==2)
         {
             var menuScript = FindObjectOfType<UIelements>();
             inGameMenu = menuScript.gameObject;
